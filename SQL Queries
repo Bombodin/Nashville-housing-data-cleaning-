@@ -1,1 +1,21 @@
+SQL queries used that build upon each other to create new table with all the data cleaned
+
+-- Check that the data was imported correctly and see where issues are
+
+SELECT * FROM `nashville-data-cleaning.nashville.nashville_housing`
+
+-- Sales data is in string format instead of date
+
+CREATE OR REPLACE TABLE `nashville-data-cleaning.nashville.cleaned_housing` AS 
+SELECT
+  CASE 
+    WHEN SaleDate LIKE '%-%' THEN PARSE_DATE('%Y%m%d', SUBSTR(SaleDate, 1, 8))
+    WHEN SAFE.PARSE_DATE('%B %d, %Y', SaleDate) IS NOT NULL THEN PARSE_DATE('%B %d, %Y', SaleDate)
+    ELSE NULL  
+  END AS SaleDate_Cleaned
+FROM `nashville-data-cleaning.nashville.nashville_housing`;
+
+-- There are null address fields which could be corresponded to a matching parcelID
+
+
 
